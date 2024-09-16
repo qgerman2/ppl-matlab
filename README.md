@@ -2,6 +2,8 @@
 
 Parma Polyhedra Library bindings for use in MATLAB and Simulink
 
+Only some minimal polyhedra features are included, and the API tries to match that of MPT3
+
 ---
 
 ### How to build Pharma Polyhedra Library binaries
