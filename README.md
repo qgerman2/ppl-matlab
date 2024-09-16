@@ -8,7 +8,7 @@ Only some minimal polyhedra features are included, and the API tries to match th
 
 ### How to build Pharma Polyhedra Library binaries
 
-This repository includes static library binaries of ppl 1.2 and gmp 6.3 compiled on GCC 8.1 for Windows x64. You need those if you want to call C++ functions through 'coder.ceval' on MATLAB scripts or MATLAB fn blocks that use them.
+This repository includes static library binaries of ppl 1.2 and gmp 6.3 compiled on GCC for Windows x64. You need those if you want to call C++ functions through 'coder.ceval' on MATLAB scripts or MATLAB fn blocks that use them.
 
 #### Prerequisites
 
