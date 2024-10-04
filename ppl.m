@@ -23,7 +23,7 @@ classdef ppl < coder.ExternalDependency
             P = coder.opaque("Parma_Polyhedra_Library::C_Polyhedron");
             coder.ceval("ppl_matlab::Polyhedron", coder.wref(P), ...
                 coder.ref(A), size(A, 1), size(A, 2), ...
-                coder.ref(b), size(b, 1));
+                coder.ref(b));
         end
 
         function contained = Contains(A, B)
