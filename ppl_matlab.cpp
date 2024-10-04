@@ -7,7 +7,7 @@ namespace ppl_matlab {
         double *A, size_t A_rows, size_t A_cols,
         double *b) {
 
-        C_Polyhedron new_poly(A_rows);
+        C_Polyhedron new_poly(A_cols);
 
         // set constraints
         for (size_t row = 0; row < A_rows; row++) {
@@ -67,12 +67,27 @@ namespace ppl_matlab {
     void Size(C_Polyhedron *P, double *constraints, double *dimension) {
         const Constraint_System &P_cs = P->constraints();
         double count = 0;
-        for (Constraint_System::const_iterator i = P_cs.begin(); i != P_cs.end(); ++i) {
+        for (Constraint_System::const_iterator i = P_cs.begin(); i != P_cs.end(); i++) {
             count++;
         }
         *constraints = count;
         *dimension = P->space_dimension();
     };
+
+    void A(C_Polyhedron *P, double *dest) {
+        size_t i = 0;
+        const Constraint_System &P_cs = P->constraints();
+        for (size_t col = 0; col < P->space_dimension(); col++) {
+            for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
+                dest[i] = -c->coefficient(Variable(col)).get_d();
+                i++;
+            }
+        }
+    }
+
+    void b(C_Polyhedron *P, double *dest) {
+
+    }
 }
 
 

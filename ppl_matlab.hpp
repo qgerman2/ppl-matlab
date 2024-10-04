@@ -32,4 +32,8 @@ namespace ppl_matlab {
     void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M);
 
     void Size(C_Polyhedron *P, double *constraints, double *dimension);
+
+    void A(C_Polyhedron *P, double *dest);
+
+    void b(C_Polyhedron *P, double *dest);
 }

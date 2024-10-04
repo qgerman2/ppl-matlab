@@ -25,4 +25,5 @@ int main() {
         std::cout << std::format("\n{}*A + {}*B <= {}\n", -c.coefficient(Variable(0)).get_d(), -c.coefficient(Variable(1)).get_d(), c.inhomogeneous_term().get_d());
         std::cout << "\n";
     }
+    std::cout << P.space_dimension();
 }

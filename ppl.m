@@ -15,7 +15,6 @@ classdef ppl < coder.ExternalDependency
             buildInfo.addIncludePaths(libPath);
             % fuentes
             buildInfo.addSourceFiles('ppl_matlab.cpp');
-            
         end
 
         function P = Polyhedron(A, b)
