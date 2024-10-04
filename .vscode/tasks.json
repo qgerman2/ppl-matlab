@@ -10,7 +10,7 @@
         "-g",
         "${workspaceFolder}\\test\\test.cpp",
         "${workspaceFolder}\\ppl_matlab.cpp",
-        "-std=c++11",
+        "-std=c++20",
         "-o",
         "${workspaceFolder}\\test\\test.exe",
         "-I${workspaceFolder}",

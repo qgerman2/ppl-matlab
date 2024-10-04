@@ -5,7 +5,7 @@
       "includePath": ["${workspaceFolder}/**"],
       "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
       "compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
-      "cStandard": "c11",
+      "cStandard": "gnu23",
       "intelliSenseMode": "windows-gcc-x64"
     }
   ],

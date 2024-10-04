@@ -39,5 +39,20 @@ classdef ppl < coder.ExternalDependency
             coder.ceval("ppl_matlab::Minus", ...
                 coder.wref(R), coder.ref(P), coder.ref(S));
         end
+
+        function R = AffineMap(P, M)
+            coder.cinclude("ppl_matlab.hpp");
+            R = coder.opaque("Parma_Polyhedra_Library::C_Polyhedron");
+            coder.ceval("ppl_matlab::AffineMap", ...
+                coder.wref(R), coder.ref(P), coder.ref(M));
+        end
+
+        function [cs, dim] = Size(P)
+            coder.cinclude("ppl_matlab.hpp");
+            cs = -1;
+            dim = -1;
+            coder.ceval("ppl_matlab::Size", ...
+                coder.ref(P), coder.wref(cs), coder.wref(dim));
+        end
     end
 end

@@ -50,6 +50,29 @@ namespace ppl_matlab {
         C_Polyhedron new_poly(R_cs);
         result->m_swap(new_poly);
     }
+
+    void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M) {
+        C_Polyhedron new_poly(*P);
+        size_t dim = P->space_dimension();
+        for (size_t row = 0; row < dim; row++) {
+            FP_Linear_Form eq;
+            for (size_t col = 0; col < dim; col++) {
+                eq += FP_Linear_Form(Variable(col)) * FP_Interval(M[dim * col + row]);
+            }
+            new_poly.affine_form_image(Variable(row), eq);
+        }
+        result->m_swap(new_poly);
+    }
+
+    void Size(C_Polyhedron *P, double *constraints, double *dimension) {
+        const Constraint_System &P_cs = P->constraints();
+        double count = 0;
+        for (Constraint_System::const_iterator i = P_cs.begin(); i != P_cs.end(); ++i) {
+            count++;
+        }
+        *constraints = count;
+        *dimension = P->space_dimension();
+    };
 }
 
 

@@ -28,4 +28,8 @@ namespace ppl_matlab {
     bool Contains(C_Polyhedron *A, C_Polyhedron *B);
 
     void Minus(C_Polyhedron *result, C_Polyhedron *P, C_Polyhedron *S);
+
+    void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M);
+
+    void Size(C_Polyhedron *P, double *constraints, double *dimension);
 }
