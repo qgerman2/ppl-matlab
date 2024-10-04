@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cppbuild",
+      "label": "C/C++: g++.exe compilar archivo activo",
+      "command": "C:\\msys64\\mingw64\\bin\\g++.exe",
+      "args": [
+        "-fdiagnostics-color=always",
+        "-g",
+        "${workspaceFolder}\\test\\test.cpp",
+        "${workspaceFolder}\\ppl_matlab.cpp",
+        "-std=c++11",
+        "-o",
+        "${workspaceFolder}\\test\\test.exe",
+        "-I${workspaceFolder}",
+        "-lppl",
+        "-lgmpxx",
+        "-lgmp"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "compilador: C:\\msys64\\mingw64\\bin\\g++.exe"
+    }
+  ]
+}

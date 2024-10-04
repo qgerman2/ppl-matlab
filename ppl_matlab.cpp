@@ -4,15 +4,15 @@ using namespace Parma_Polyhedra_Library;
 
 namespace ppl_matlab {
     void Polyhedron(C_Polyhedron *result,
-        double *A, unsigned long A_rows, unsigned long A_cols,
-        double *b, unsigned long b_length) {
+        double *A, size_t A_rows, size_t A_cols,
+        double *b) {
 
-        C_Polyhedron new_poly(b_length);
+        C_Polyhedron new_poly(A_rows);
 
         // set constraints
-        for (unsigned long row = 0; row < b_length; row++) {
+        for (size_t row = 0; row < A_rows; row++) {
             FP_Linear_Form left;
-            for (unsigned long col = 0; col < A_cols; col++) {
+            for (size_t col = 0; col < A_cols; col++) {
                 left += FP_Linear_Form(Variable(col)) * FP_Interval(A[A_rows * col + row]);
             }
             FP_Linear_Form right(FP_Interval(b[row]));

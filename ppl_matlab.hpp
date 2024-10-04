@@ -22,8 +22,8 @@ namespace ppl_matlab {
     typedef Linear_Form<FP_Interval> FP_Linear_Form;
 
     void Polyhedron(C_Polyhedron *result,
-        double *A, unsigned long A_rows, unsigned long A_cols,
-        double *b, unsigned long b_length);
+        double *A, size_t A_rows, size_t A_cols,
+        double *b);
 
     bool Contains(C_Polyhedron *A, C_Polyhedron *B);
 
