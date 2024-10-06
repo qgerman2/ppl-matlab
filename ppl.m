@@ -53,5 +53,21 @@ classdef ppl < coder.ExternalDependency
             coder.ceval("ppl_matlab::Size", ...
                 coder.ref(P), coder.wref(cs), coder.wref(dim));
         end
+
+        function M = A(P)
+            coder.cinclude("ppl_matlab.hpp");
+            [rows, cols] = ppl.Size(P);
+            M = zeros(rows, cols);
+            coder.ceval("ppl_matlab::A", ...
+                coder.ref(P), coder.wref(M));
+        end
+
+        function M = b(P)
+            coder.cinclude("ppl_matlab.hpp");
+            [rows, ~] = ppl.Size(P);
+            M = zeros(rows, 1);
+            coder.ceval("ppl_matlab::b", ...
+                coder.ref(P), coder.wref(M));
+        end
     end
 end

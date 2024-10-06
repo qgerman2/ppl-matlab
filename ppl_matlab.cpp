@@ -86,7 +86,12 @@ namespace ppl_matlab {
     }
 
     void b(C_Polyhedron *P, double *dest) {
-
+        size_t i = 0;
+        const Constraint_System &P_cs = P->constraints();
+        for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
+            dest[i] = c->inhomogeneous_term().get_d();
+            i++;
+        }
     }
 }
 
