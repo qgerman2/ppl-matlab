@@ -24,16 +24,11 @@ namespace ppl_matlab {
     void Polyhedron(C_Polyhedron *result,
         double *A, size_t A_rows, size_t A_cols,
         double *b);
-
     bool Contains(C_Polyhedron *A, C_Polyhedron *B);
-
     void Minus(C_Polyhedron *result, C_Polyhedron *P, C_Polyhedron *S);
-
     void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M);
-
-    void Size(C_Polyhedron *P, double *constraints, double *dimension);
-
+    void Size(C_Polyhedron *P, double *constraints, double *dimension, double *vertices);
     void A(C_Polyhedron *P, double *dest);
-
     void b(C_Polyhedron *P, double *dest);
+    void V(C_Polyhedron *P, double *dest, size_t vertices);
 }

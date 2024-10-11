@@ -2,7 +2,7 @@ clc;
 clearvars;
 
 A1 = [2*eye(2); -2*eye(2)];
-b1 = [5; 5; 5; 5];
+b1 = [1; 2; 3; 4];
 
 A = Polyhedron(A1, b1);
 
@@ -11,4 +11,10 @@ b2 = [2; 2; 2; 2];
 
 B = Polyhedron(A2, b2);
 
-A.minus(B).H
+S = A.minus(B);
+
+S.minHRep;S.minVRep;
+
+S.H
+S.V
+

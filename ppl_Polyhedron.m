@@ -23,9 +23,11 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
         instance
         dimension = 0;
         constraints = 0;
+        vertices = 0;
         A = [];
         b = [];
         H = [];
+        V = [];
     end
     methods (Access = public)
         function P = ppl_Polyhedron(varargin)
@@ -68,13 +70,18 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             coder.cinclude("ppl_matlab.hpp");
             % get number of constraints and dimension
             coder.ceval("ppl_matlab::Size", ...
-                coder.ref(P.instance), coder.wref(P.constraints), coder.wref(P.dimension));
+                coder.ref(P.instance), ...
+                coder.wref(P.constraints), ...
+                coder.wref(P.dimension), ...
+                coder.wref(P.vertices));
             % prepare empty A and b matrices
             P.A = zeros(P.constraints, P.dimension);
             P.b = zeros(P.constraints, 1);
+            P.V = zeros(P.vertices, P.dimension);
             % fill
             coder.ceval("ppl_matlab::A", coder.ref(P.instance), coder.wref(P.A));
             coder.ceval("ppl_matlab::b", coder.ref(P.instance), coder.wref(P.b));
+            coder.ceval("ppl_matlab::V", coder.ref(P.instance), coder.wref(P.V), P.vertices);
             % update H representation
             P.H = [P.A, P.b];
         end

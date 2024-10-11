@@ -11,19 +11,16 @@ int main() {
       0, 1, 0, -1
     };
     double P_b[] = {
-        5, 5, 5, 5
+        4.5, 5, 5, 5
     };
     ppl_matlab::Polyhedron(&P, P_A, 4, 2, P_b);
 
-    // ppl_matlab::FP_Linear_Form eq = Variable(0) * 2 + Variable(1) * 2;
-    // P.affine_form_image(Variable(0), eq);
 
-    const Constraint_System &P_cs = P.constraints();
-    for (Constraint_System::const_iterator i = P_cs.begin(); i != P_cs.end(); ++i) {
-        const Constraint &c = *i;
-        c.print();
-        std::cout << std::format("\n{}*A + {}*B <= {}\n", -c.coefficient(Variable(0)).get_d(), -c.coefficient(Variable(1)).get_d(), c.inhomogeneous_term().get_d());
-        std::cout << "\n";
+    const Generator_System &gs = P.minimized_generators();
+    for (Generator_System::const_iterator i = gs.begin(); i != gs.end(); i++) {
+        const Generator &g = *i;
+        if (g.is_point()) {
+            std::cout << std::format("x: {} y: {} e:{}\n", g.coefficient(Variable(0)).get_d(), g.coefficient(Variable(1)).get_d(), g.divisor().get_d());
+        }
     }
-    std::cout << P.space_dimension();
 }

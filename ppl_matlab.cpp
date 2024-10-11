@@ -27,7 +27,7 @@ namespace ppl_matlab {
     }
 
     void Minus(C_Polyhedron *result, C_Polyhedron *P, C_Polyhedron *S) {
-        const Constraint_System &P_cs = P->constraints();
+        const Constraint_System &P_cs = P->minimized_constraints();
         Constraint_System R_cs(P_cs);
         for (Constraint_System::const_iterator i = P_cs.begin(); i != P_cs.end(); ++i) {
             const Constraint &c = *i;
@@ -63,19 +63,26 @@ namespace ppl_matlab {
         result->m_swap(new_poly);
     }
 
-    void Size(C_Polyhedron *P, double *constraints, double *dimension) {
-        const Constraint_System &P_cs = P->constraints();
-        double count = 0;
-        for (Constraint_System::const_iterator i = P_cs.begin(); i != P_cs.end(); i++) {
-            count++;
-        }
-        *constraints = count;
+    void Size(C_Polyhedron *P, double *constraints, double *dimension, double *vertices) {
+        const Constraint_System &cs = P->minimized_constraints();
+        const Generator_System &gs = P->minimized_generators();
+        double cs_count = 0;
+        double v_count = 0;
+        for (Constraint_System::const_iterator i = cs.begin(); i != cs.end(); i++) {
+            cs_count++;
+        };
+        for (Generator_System::const_iterator i = gs.begin(); i != gs.end(); i++) {
+            const Generator &g = *i;
+            if (g.is_point()) { v_count++; }
+        };
+        *constraints = cs_count;
         *dimension = P->space_dimension();
-    };
+        *vertices = v_count;
+    }
 
     void A(C_Polyhedron *P, double *dest) {
         size_t i = 0;
-        const Constraint_System &P_cs = P->constraints();
+        const Constraint_System &P_cs = P->minimized_constraints();
         for (size_t col = 0; col < P->space_dimension(); col++) {
             for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
                 dest[i] = -c->coefficient(Variable(col)).get_d();
@@ -86,12 +93,23 @@ namespace ppl_matlab {
 
     void b(C_Polyhedron *P, double *dest) {
         size_t i = 0;
-        const Constraint_System &P_cs = P->constraints();
+        const Constraint_System &P_cs = P->minimized_constraints();
         for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
             dest[i] = c->inhomogeneous_term().get_d();
             i++;
         }
     }
-}
 
+    void V(C_Polyhedron *P, double *dest, size_t vertices) {
+        const Generator_System &gs = P->minimized_generators();
+        for (size_t var = 0; var < P->space_dimension(); var++) {
+            size_t vertex = 0;
+            for (Generator_System::const_iterator g = gs.begin(); g != gs.end(); g++) {
+                if (!g->is_point()) { continue; }
+                dest[var * vertices + vertex] = g->coefficient(Variable(var)).get_d() / g->divisor().get_d();
+                vertex++;
+            };
+        }
+    }
+};
 
