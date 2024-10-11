@@ -33,7 +33,7 @@ namespace ppl_matlab {
             const Constraint &c = *i;
             Linear_Expression exp;
             for (size_t i = 0; i < P->space_dimension(); i++) {
-                exp += Variable(i) * c.coefficient(Variable(i));
+                exp += Variable(i) * -c.coefficient(Variable(i));
             }
             Coefficient num;
             Coefficient den;
@@ -42,8 +42,7 @@ namespace ppl_matlab {
             bool ok = S->maximize(exp, num, den, included);
             if (ok) {
                 Linear_Expression exp(c.expression());
-                exp -= num / den;
-                R_cs.insert(exp <= 0);
+                R_cs.insert(exp * den >= num);
             }
         }
 
