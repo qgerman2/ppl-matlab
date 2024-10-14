@@ -123,6 +123,12 @@ namespace ppl_matlab {
         *rays = r_count;
     }
 
+    void ConvexHull(C_Polyhedron *R, C_Polyhedron *P, C_Polyhedron *S) {
+        C_Polyhedron new_poly(*P);
+        new_poly.poly_hull_assign(*S);
+        R->m_swap(new_poly);
+    }
+
     void A(C_Polyhedron *P, double *dest) {
         size_t i = 0;
         const Constraint_System &P_cs = P->minimized_constraints();

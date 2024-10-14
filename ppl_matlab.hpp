@@ -23,10 +23,10 @@ namespace ppl_matlab {
 
     template <typename FP_Format, typename Interval_Info>
     void
-    convert_to_integer_expression(
-        const Linear_Form<Interval <FP_Format, Interval_Info> > &lf,
-        const dimension_type lf_dimension,
-        Linear_Expression &result) {
+        convert_to_integer_expression(
+            const Linear_Form<Interval <FP_Format, Interval_Info> > &lf,
+            const dimension_type lf_dimension,
+            Linear_Expression &result) {
         result = Linear_Expression();
 
         typedef Interval<FP_Format, Interval_Info> FP_Interval_Type;
@@ -79,6 +79,7 @@ namespace ppl_matlab {
     void Minus(C_Polyhedron *result, C_Polyhedron *P, C_Polyhedron *S);
     void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M);
     void Size(C_Polyhedron *P, double *constraints, double *dimension, double *vertices, double *rays);
+    void ConvexHull(C_Polyhedron *R, C_Polyhedron *P, C_Polyhedron *S);
     void A(C_Polyhedron *P, double *dest);
     void b(C_Polyhedron *P, double *dest);
     void V(C_Polyhedron *P, double *dest, size_t vertices);

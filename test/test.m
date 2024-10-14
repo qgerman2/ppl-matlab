@@ -49,3 +49,25 @@ for i = 1:nargin
         a{i}
     end
 end
+
+%%
+clearvars;
+
+P(1) = Polyhedron('V', [0, 0; -1, -1; 0, -1; -1, 0]);
+
+P(2) = Polyhedron('V', [0, 0; 1, 1; 0, 1; 1, 0]);
+
+P = PolyUnion(P)
+
+%%
+clearvars;
+
+H = [1,     0,     1;
+    -3,     1,     3;
+     1,    -5,     6;
+    -1,     1,     1;
+     0,     1,     1];
+
+P = Polyhedron('H', H);
+clf;
+P.plot
