@@ -20,20 +20,22 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
         end
         % constructors
         function P = from_HRep(A, b)
+            % A, b non strict inequality constructor
             coder.cinclude("ppl_matlab.hpp");
             P = ppl_Polyhedron();
-            if nargin == 2
-                % A, b non strict inequality constructor
-                A = varargin{1};
-                b = varargin{2};
-                coder.ceval("ppl_matlab::Polyhedron", coder.wref(P.instance), ...
-                coder.ref(A), size(A, 1), size(A, 2), ...
-                coder.ref(b));
-                P.update_representation();
-            end
+            coder.ceval("ppl_matlab::Polyhedron_HRep", coder.wref(P.instance), ...
+            coder.ref(A), size(A, 1), size(A, 2), ...
+            coder.ref(b));
+            P.update_representation();
         end
         function P = from_VRep(V, R)
-            
+            % V, R vertices and rays constructor
+            coder.cinclude("ppl_matlab.hpp");
+            P = ppl_Polyhedron();
+            coder.ceval("ppl_matlab::Polyhedron_VRep", coder.wref(P.instance), ...
+                coder.ref(V), coder.ref(R), ...
+                size(V, 2), size(V, 1), size(R, 1));
+            P.update_representation();
         end
     end
     properties (SetAccess = private)
@@ -52,10 +54,11 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
         function P = ppl_Polyhedron(varargin)
             coder.cinclude("ppl_matlab.hpp");
             if (nargin == 2)
-                P = ppl_Polyhedorn
+                % call H rep constructor
+                P = ppl_Polyhedron.from_HRep(varargin{1}, varargin{2});
+            else 
+                P.instance = coder.opaque("Parma_Polyhedra_Library::C_Polyhedron");
             end
-            P.instance = coder.opaque("Parma_Polyhedra_Library::C_Polyhedron");
-            
         end
         function contained = contains(P, B)
             coder.cinclude("ppl_matlab.hpp");
@@ -76,6 +79,35 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             coder.ceval("ppl_matlab::AffineMap", ...
                 coder.wref(R.instance), coder.ref(P.instance), coder.ref(M));
             R.update_representation();
+        end
+        function newR = plus(P, S)
+% minkowski sum from mpt3 source
+% https://github.com/kvasnica/mpt3/blob/master/source/mpt/modules/geometry/sets/%40Polyhedron/plus.m
+            Vp = P.V; Vs = S.V;
+            Rp = P.R; Rs = S.R;
+			if size(Vp, 1)==0
+				newV = Vs;
+			elseif size(Vs, 1)==0
+				newV = Vp;
+			else
+				newV = zeros(size(Vp,1)*size(Vs,1), P.Dim);
+				for i = 1:size(Vs, 1)
+					newV((i-1)*size(Vp, 1)+1:i*size(Vp, 1), :) = bsxfun(@plus, Vp, Vs(i, :));
+				end
+			end
+			
+			if size(Rp, 1)==0
+				newR = Rs;
+			elseif size(Rs, 1)==0
+				newR = Rp;
+			else
+				newR = zeros(size(Rp,1)*size(Rs,1), P.Dim);
+				for i = 1:size(Rs, 1)
+					newR((i-1)*size(Rp, 1)+1:i*size(Rp, 1), :) = bsxfun(@plus, Rp, Rs(i, :));
+				end
+			end
+            
+            R = ppl_Polyhedron.from_VRep(newV, newR);
         end
     end
     methods (Access = private)

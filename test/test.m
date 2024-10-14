@@ -2,17 +2,16 @@ clc;
 clearvars;
 clf;
 
-A1 = [2*eye(2); -2*eye(2)];
-b1 = [1; 2; 3; 4];
+A1 = [eye(2); -eye(2)];
+b1 = [1;1;1;1];
 
 A = Polyhedron(A1, b1);
 
-A2 = [3*eye(2); -5*eye(2)];
-b2 = [2; 2; 2; 2];
+V2 = [0, 0; 0, 1; 1, 1; 1, 0];
 
-B = Polyhedron(A2, b2);
+B = Polyhedron('V', V2);
 
-S = A.minus(B);
+S = A.plus(B);
 
 S.minHRep;S.minVRep;
 
