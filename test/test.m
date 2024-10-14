@@ -33,3 +33,20 @@ P.R
 
 xlim([-3,3]);
 ylim([-3,3]);
+
+%% 
+clc;
+clearvars;
+
+nargin = 4;
+
+a = {'A', 1, 'V', 4};
+
+for i = 1:nargin
+    if class(a{i}) ~= "char" 
+        continue;
+    end
+    if ismember(a{i}, {'A', 'b', 'V', 'H'})
+        a{i}
+    end
+end

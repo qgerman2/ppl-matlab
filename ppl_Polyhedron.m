@@ -18,6 +18,25 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             % Binding source code
             buildInfo.addSourceFiles('ppl_matlab.cpp');
         end
+        % constructors
+        function P = from_HRep(A, b)
+            % A, b non strict inequality constructor
+            coder.cinclude("ppl_matlab.hpp");
+            P = ppl_Polyhedron();
+            coder.ceval("ppl_matlab::Polyhedron_HRep", coder.wref(P.instance), ...
+            coder.ref(A), size(A, 1), size(A, 2), ...
+            coder.ref(b));
+            P.update_representation();
+        end
+        function P = from_VRep(V, R)
+            % V, R vertices and rays constructor
+            coder.cinclude("ppl_matlab.hpp");
+            P = ppl_Polyhedron();
+            coder.ceval("ppl_matlab::Polyhedron_VRep", coder.wref(P.instance), ...
+                coder.ref(V), coder.ref(R), ...
+                size(V, 2), size(V, 1), size(R, 1));
+            P.update_representation();
+        end
     end
     properties (SetAccess = private)
         instance
@@ -34,15 +53,11 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
     methods (Access = public)
         function P = ppl_Polyhedron(varargin)
             coder.cinclude("ppl_matlab.hpp");
-            P.instance = coder.opaque("Parma_Polyhedra_Library::C_Polyhedron");
-            if nargin == 2
-                % A, b non strict inequality constructor
-                A = varargin{1};
-                b = varargin{2};
-                coder.ceval("ppl_matlab::Polyhedron", coder.wref(P.instance), ...
-                coder.ref(A), size(A, 1), size(A, 2), ...
-                coder.ref(b));
-                P.update_representation();
+            if (nargin == 2)
+                % call H rep constructor
+                P = ppl_Polyhedron.from_HRep(varargin{1}, varargin{2});
+            else 
+                P.instance = coder.opaque("Parma_Polyhedra_Library::C_Polyhedron");
             end
         end
         function contained = contains(P, B)

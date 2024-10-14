@@ -3,22 +3,62 @@
 using namespace Parma_Polyhedra_Library;
 
 namespace ppl_matlab {
-    void Polyhedron(C_Polyhedron *result,
-        double *A, size_t A_rows, size_t A_cols,
+    void Polyhedron_HRep(C_Polyhedron *result,
+        double *A, size_t inequalities, size_t dimension,
         double *b) {
 
-        C_Polyhedron new_poly(A_cols);
+        C_Polyhedron new_poly(dimension);
 
         // set constraints
-        for (size_t row = 0; row < A_rows; row++) {
+        for (size_t row = 0; row < inequalities; row++) {
             FP_Linear_Form left;
-            for (size_t col = 0; col < A_cols; col++) {
-                left += FP_Linear_Form(Variable(col)) * FP_Interval(A[A_rows * col + row]);
+            for (size_t col = 0; col < dimension; col++) {
+                left += FP_Linear_Form(Variable(col)) * FP_Interval(A[inequalities * col + row]);
             }
             FP_Linear_Form right(FP_Interval(b[row]));
             new_poly.refine_with_linear_form_inequality(left, right);
         }
 
+        result->m_swap(new_poly);
+    }
+
+    void Polyhedron_VRep(C_Polyhedron *result,
+        double *V, double *R,
+        size_t dimension, size_t vertices, size_t rays) {
+        Generator_System gs;
+        // construct vertices
+        for (size_t row = 0; row < vertices; row++) {
+            // construct linear form from matrix
+            FP_Linear_Form lf;
+            for (size_t col = 0; col < dimension; col++) {
+                lf += FP_Linear_Form(Variable(col)) * FP_Interval(V[vertices * col + row]);
+            }
+            // add constant to track lcm
+            lf += FP_Interval(1);
+            // convert linear form to linear expression
+            Linear_Expression le;
+            convert_to_integer_expression(lf, lf.space_dimension(), le);
+            // extract constant
+            Coefficient div = le.inhomogeneous_term();
+            le.set_inhomogeneous_term(0);
+            // create vertex
+            gs.insert(Generator::point(le, div));
+        }
+        // construct rays
+        for (size_t row = 0; row < rays; row++) {
+            // construct linear form from matrix
+            FP_Linear_Form lf;
+            for (size_t col = 0; col < dimension; col++) {
+                lf += FP_Linear_Form(Variable(col)) * FP_Interval(R[rays * col + row]);
+            }
+            // convert linear form to linear expression
+            Linear_Expression le;
+            convert_to_integer_expression(lf, lf.space_dimension(), le);
+            // create vertex
+            gs.insert(Generator::ray(le));
+        }
+
+        C_Polyhedron new_poly(gs);
         result->m_swap(new_poly);
     }
 
