@@ -1,5 +1,6 @@
 clc;
 clearvars;
+clf;
 
 A1 = [2*eye(2); -2*eye(2)];
 b1 = [1; 2; 3; 4];
@@ -18,3 +19,17 @@ S.minHRep;S.minVRep;
 S.H
 S.V
 
+%%
+clc;
+clearvars;
+clf;
+
+A = eye(2);
+b = [1; 1];
+
+P = Polyhedron(A, b)
+P.V
+P.R
+
+xlim([-3,3]);
+ylim([-3,3]);

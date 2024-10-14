@@ -63,21 +63,24 @@ namespace ppl_matlab {
         result->m_swap(new_poly);
     }
 
-    void Size(C_Polyhedron *P, double *constraints, double *dimension, double *vertices) {
+    void Size(C_Polyhedron *P, double *constraints, double *dimension, double *vertices, double *rays) {
         const Constraint_System &cs = P->minimized_constraints();
         const Generator_System &gs = P->minimized_generators();
         double cs_count = 0;
         double v_count = 0;
+        double r_count = 0;
         for (Constraint_System::const_iterator i = cs.begin(); i != cs.end(); i++) {
             cs_count++;
         };
         for (Generator_System::const_iterator i = gs.begin(); i != gs.end(); i++) {
             const Generator &g = *i;
             if (g.is_point()) { v_count++; }
+            if (g.is_ray()) { r_count++; }
         };
         *constraints = cs_count;
         *dimension = P->space_dimension();
         *vertices = v_count;
+        *rays = r_count;
     }
 
     void A(C_Polyhedron *P, double *dest) {
@@ -108,6 +111,18 @@ namespace ppl_matlab {
                 if (!g->is_point()) { continue; }
                 dest[var * vertices + vertex] = g->coefficient(Variable(var)).get_d() / g->divisor().get_d();
                 vertex++;
+            };
+        }
+    }
+
+    void R(C_Polyhedron *P, double *dest, size_t rays) {
+        const Generator_System &gs = P->minimized_generators();
+        for (size_t var = 0; var < P->space_dimension(); var++) {
+            size_t ray = 0;
+            for (Generator_System::const_iterator g = gs.begin(); g != gs.end(); g++) {
+                if (!g->is_ray()) { continue; }
+                dest[var * rays + ray] = g->coefficient(Variable(var)).get_d();
+                ray++;
             };
         }
     }
