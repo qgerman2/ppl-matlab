@@ -2,21 +2,12 @@ clc;
 clearvars;
 clf;
 
-A1 = [eye(2); -eye(2)];
-b1 = [1;1;1;1];
+V = [0, 0];
+R = [1, 1];
 
-A = Polyhedron(A1, b1);
+A = Polyhedron('V', V, 'R', R);
 
-V2 = [0, 0; 0, 1; 1, 1; 1, 0];
-
-B = Polyhedron('V', V2);
-
-S = A.plus(B);
-
-S.minHRep;S.minVRep;
-
-S.H
-S.V
+A.plot
 
 %%
 clc;

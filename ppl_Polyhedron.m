@@ -51,7 +51,8 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
     properties (SetAccess = private)
         instance
         dimension = 0;
-        constraints = 0;
+        inequalities = 0;
+        equalities = 0;
         vertices = 0;
         rays = 0;
         A = [];
@@ -59,6 +60,9 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
         H = [];
         V = [];
         R = [];
+        Ae = [];
+        be = [];
+        He = [];
     end
     methods (Access = public)
         function P = ppl_Polyhedron(varargin)
@@ -125,22 +129,28 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             % get number of constraints and dimension
             coder.ceval("ppl_matlab::Size", ...
                 coder.ref(P.instance), ...
-                coder.wref(P.constraints), ...
+                coder.wref(P.inequalities), ...
+                coder.wref(P.equalities), ...
                 coder.wref(P.dimension), ...
                 coder.wref(P.vertices), ...
                 coder.wref(P.rays));
             % prepare empty A and b matrices
-            P.A = zeros(P.constraints, P.dimension);
-            P.b = zeros(P.constraints, 1);
+            P.A = zeros(P.inequalities, P.dimension);
+            P.b = zeros(P.inequalities, 1);
             P.V = zeros(P.vertices, P.dimension);
             P.R = zeros(P.rays, P.dimension);
+            P.Ae = zeros(P.equalities, P.dimension);
+            P.be = zeros(P.equalities, 1);
             % fill
             coder.ceval("ppl_matlab::A", coder.ref(P.instance), coder.wref(P.A));
             coder.ceval("ppl_matlab::b", coder.ref(P.instance), coder.wref(P.b));
             coder.ceval("ppl_matlab::V", coder.ref(P.instance), coder.wref(P.V), P.vertices);
             coder.ceval("ppl_matlab::R", coder.ref(P.instance), coder.wref(P.R), P.rays);
+            coder.ceval("ppl_matlab::Ae", coder.ref(P.instance), coder.wref(P.Ae));
+            coder.ceval("ppl_matlab::be", coder.ref(P.instance), coder.wref(P.be));
             % update H representation
             P.H = [P.A, P.b];
+            P.He = [P.Ae, P.be];
         end
     end
 end

@@ -103,21 +103,28 @@ namespace ppl_matlab {
         result->m_swap(new_poly);
     }
 
-    void Size(C_Polyhedron *P, double *constraints, double *dimension, double *vertices, double *rays) {
+    void Size(C_Polyhedron *P, double *inequalities, double *equalities, double *dimension, double *vertices, double *rays) {
         const Constraint_System &cs = P->minimized_constraints();
         const Generator_System &gs = P->minimized_generators();
-        double cs_count = 0;
+        double ineq_count = 0;
+        double eq_count = 0;
         double v_count = 0;
         double r_count = 0;
         for (Constraint_System::const_iterator i = cs.begin(); i != cs.end(); i++) {
-            cs_count++;
+            const Constraint &c = *i;
+            if (c.is_inequality()) {
+                ineq_count++;
+            } else {
+                eq_count++;
+            }
         };
         for (Generator_System::const_iterator i = gs.begin(); i != gs.end(); i++) {
             const Generator &g = *i;
             if (g.is_point()) { v_count++; }
             if (g.is_ray()) { r_count++; }
         };
-        *constraints = cs_count;
+        *inequalities = ineq_count;
+        *equalities = eq_count;
         *dimension = P->space_dimension();
         *vertices = v_count;
         *rays = r_count;
@@ -134,8 +141,10 @@ namespace ppl_matlab {
         const Constraint_System &P_cs = P->minimized_constraints();
         for (size_t col = 0; col < P->space_dimension(); col++) {
             for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
-                dest[i] = -c->coefficient(Variable(col)).get_d();
-                i++;
+                if (c->is_inequality()) {
+                    dest[i] = -c->coefficient(Variable(col)).get_d();
+                    i++;
+                }
             }
         }
     }
@@ -144,8 +153,10 @@ namespace ppl_matlab {
         size_t i = 0;
         const Constraint_System &P_cs = P->minimized_constraints();
         for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
-            dest[i] = c->inhomogeneous_term().get_d();
-            i++;
+            if (c->is_inequality()) {
+                dest[i] = c->inhomogeneous_term().get_d();
+                i++;
+            }
         }
     }
 
@@ -172,5 +183,30 @@ namespace ppl_matlab {
             };
         }
     }
+
+    void Ae(C_Polyhedron *P, double *dest) {
+        size_t i = 0;
+        const Constraint_System &P_cs = P->minimized_constraints();
+        for (size_t col = 0; col < P->space_dimension(); col++) {
+            for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
+                if (!c->is_inequality()) {
+                    dest[i] = -c->coefficient(Variable(col)).get_d();
+                    i++;
+                }
+            }
+        }
+    }
+
+    void be(C_Polyhedron *P, double *dest) {
+        size_t i = 0;
+        const Constraint_System &P_cs = P->minimized_constraints();
+        for (Constraint_System::const_iterator c = P_cs.begin(); c != P_cs.end(); c++) {
+            if (!c->is_inequality()) {
+                dest[i] = c->inhomogeneous_term().get_d();
+                i++;
+            }
+        }
+    }
+
 };
 
