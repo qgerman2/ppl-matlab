@@ -50,7 +50,7 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
     end
     properties (SetAccess = private)
         instance
-        dimension = 0;
+        Dim  = 0;
         inequalities = 0;
         equalities = 0;
         vertices = 0;
@@ -104,7 +104,7 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
 			elseif size(Vs, 1)==0
 				newV = Vp;
 			else
-				newV = zeros(size(Vp,1)*size(Vs,1), P.dimension);
+				newV = zeros(size(Vp,1)*size(Vs,1), P.Dim);
 				for i = 1:size(Vs, 1)
 					newV((i-1)*size(Vp, 1)+1:i*size(Vp, 1), :) = bsxfun(@plus, Vp, Vs(i, :));
 				end
@@ -114,12 +114,28 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
 			elseif size(Rs, 1)==0
 				newR = Rp;
 			else
-				newR = zeros(size(Rp,1)*size(Rs,1), P.dimension);
+				newR = zeros(size(Rp,1)*size(Rs,1), P.Dim);
 				for i = 1:size(Rs, 1)
 					newR((i-1)*size(Rp, 1)+1:i*size(Rp, 1), :) = bsxfun(@plus, Rp, Rs(i, :));
 				end
             end
             R = ppl_Polyhedron.from_VRep(newV, newR);
+        end
+        function empty = isEmptySet(P)
+            coder.cinclude("ppl_matlab.hpp");
+            empty = 0;
+            empty = coder.ceval("ppl_matlab::Empty", coder.ref(P.instance));
+        end
+        % Check if point x0 is inside polyhedron P
+        function inside = isInside(P, x0)
+            assert(isvector(x0));
+            if (size(x0,1)==1)   % if it is row vector
+                x = ppl_Polyhedron.from_VRep(x0, []);
+            else                 % column vector gets transposed to row vector
+                x = ppl_Polyhedron.from_VRep(x0', []);
+            end
+            coder.cinclude("ppl_matlab.hpp");
+            inside = P.contains(x);
         end
     end
     methods (Access = private)
@@ -131,15 +147,15 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
                 coder.ref(P.instance), ...
                 coder.wref(P.inequalities), ...
                 coder.wref(P.equalities), ...
-                coder.wref(P.dimension), ...
+                coder.wref(P.Dim), ...
                 coder.wref(P.vertices), ...
                 coder.wref(P.rays));
             % prepare empty A and b matrices
-            P.A = zeros(P.inequalities, P.dimension);
+            P.A = zeros(P.inequalities, P.Dim);
             P.b = zeros(P.inequalities, 1);
-            P.V = zeros(P.vertices, P.dimension);
-            P.R = zeros(P.rays, P.dimension);
-            P.Ae = zeros(P.equalities, P.dimension);
+            P.V = zeros(P.vertices, P.Dim);
+            P.R = zeros(P.rays, P.Dim);
+            P.Ae = zeros(P.equalities, P.Dim);
             P.be = zeros(P.equalities, 1);
             % fill
             coder.ceval("ppl_matlab::A", coder.ref(P.instance), coder.wref(P.A));

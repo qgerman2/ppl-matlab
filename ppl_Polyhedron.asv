@@ -37,11 +37,22 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
                 size(V, 2), size(V, 1), size(R, 1));
             P.update_representation();
         end
+        % convex hull
+        function P = convexHull(S)
+            coder.cinclude("ppl_matlab.hpp");
+            P = S{1};
+            for i = 2:numel(S)
+                coder.ceval("ppl_matlab::ConvexHull", ...
+                    coder.wref(P.instance), coder.ref(P.instance), coder.ref(S{i}.instance));
+            end
+            P.update_representation();
+        end
     end
     properties (SetAccess = private)
         instance
-        dimension = 0;
-        constraints = 0;
+        Dim  = 0;
+        inequalities = 0;
+        equalities = 0;
         vertices = 0;
         rays = 0;
         A = [];
@@ -49,6 +60,9 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
         H = [];
         V = [];
         R = [];
+        Ae = [];
+        be = [];
+        He = [];
     end
     methods (Access = public)
         function P = ppl_Polyhedron(varargin)
@@ -80,12 +94,12 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
                 coder.wref(R.instance), coder.ref(P.instance), coder.ref(M));
             R.update_representation();
         end
-        function newR = plus(P, S)
-% minkowski sum from mpt3 source
-% https://github.com/kvasnica/mpt3/blob/master/source/mpt/modules/geometry/sets/%40Polyhedron/plus.m
+        % minkowski sum from mpt3 source
+        % https://github.com/kvasnica/mpt3/blob/master/source/mpt/modules/geometry/sets/%40Polyhedron/plus.m
+        function R = plus(P, S)
             Vp = P.V; Vs = S.V;
             Rp = P.R; Rs = S.R;
-			if size(Vp, 1)==0
+            if size(Vp, 1)==0
 				newV = Vs;
 			elseif size(Vs, 1)==0
 				newV = Vp;
@@ -94,9 +108,8 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
 				for i = 1:size(Vs, 1)
 					newV((i-1)*size(Vp, 1)+1:i*size(Vp, 1), :) = bsxfun(@plus, Vp, Vs(i, :));
 				end
-			end
-			
-			if size(Rp, 1)==0
+            end
+            if size(Rp, 1)==0
 				newR = Rs;
 			elseif size(Rs, 1)==0
 				newR = Rp;
@@ -105,9 +118,24 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
 				for i = 1:size(Rs, 1)
 					newR((i-1)*size(Rp, 1)+1:i*size(Rp, 1), :) = bsxfun(@plus, Rp, Rs(i, :));
 				end
-			end
-            
+            end
             R = ppl_Polyhedron.from_VRep(newV, newR);
+        end
+        function empty = isEmptySet(P)
+            coder.cinclude("ppl_matlab.hpp");
+            empty = 0;
+            empty = coder.ceval("ppl_matlab::Empty", coder.ref(P.instance));
+        end
+        function inside = isInside(P, x0)
+            assert(isvector(x0));
+            if (size(x0,1)>1)   % if it is column vector
+                x0 = x0';       % convert to row vector
+            else 
+                
+            end
+            coder.cinclude("ppl_matlab.hpp");
+            x = ppl_Polyhedron.from_VRep(x0, []);
+            inside = P.contains(x);
         end
     end
     methods (Access = private)
@@ -117,22 +145,28 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             % get number of constraints and dimension
             coder.ceval("ppl_matlab::Size", ...
                 coder.ref(P.instance), ...
-                coder.wref(P.constraints), ...
-                coder.wref(P.dimension), ...
+                coder.wref(P.inequalities), ...
+                coder.wref(P.equalities), ...
+                coder.wref(P.Dim), ...
                 coder.wref(P.vertices), ...
                 coder.wref(P.rays));
             % prepare empty A and b matrices
-            P.A = zeros(P.constraints, P.dimension);
-            P.b = zeros(P.constraints, 1);
-            P.V = zeros(P.vertices, P.dimension);
-            P.R = zeros(P.rays, P.dimension);
+            P.A = zeros(P.inequalities, P.Dim);
+            P.b = zeros(P.inequalities, 1);
+            P.V = zeros(P.vertices, P.Dim);
+            P.R = zeros(P.rays, P.Dim);
+            P.Ae = zeros(P.equalities, P.Dim);
+            P.be = zeros(P.equalities, 1);
             % fill
             coder.ceval("ppl_matlab::A", coder.ref(P.instance), coder.wref(P.A));
             coder.ceval("ppl_matlab::b", coder.ref(P.instance), coder.wref(P.b));
             coder.ceval("ppl_matlab::V", coder.ref(P.instance), coder.wref(P.V), P.vertices);
             coder.ceval("ppl_matlab::R", coder.ref(P.instance), coder.wref(P.R), P.rays);
+            coder.ceval("ppl_matlab::Ae", coder.ref(P.instance), coder.wref(P.Ae));
+            coder.ceval("ppl_matlab::be", coder.ref(P.instance), coder.wref(P.be));
             % update H representation
             P.H = [P.A, P.b];
+            P.He = [P.Ae, P.be];
         end
     end
 end

@@ -62,10 +62,6 @@ namespace ppl_matlab {
         result->m_swap(new_poly);
     }
 
-    bool Contains(C_Polyhedron *A, C_Polyhedron *B) {
-        return A->contains(*B);
-    }
-
     void Minus(C_Polyhedron *result, C_Polyhedron *P, C_Polyhedron *S) {
         const Constraint_System &P_cs = P->minimized_constraints();
         Constraint_System R_cs(P_cs);

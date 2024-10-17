@@ -75,11 +75,12 @@ namespace ppl_matlab {
     void Polyhedron_VRep(C_Polyhedron *result,
         double *V, double *R, size_t dimension, size_t vertices, size_t rays
     );
-    bool Contains(C_Polyhedron *A, C_Polyhedron *B);
+    inline bool Contains(C_Polyhedron *A, C_Polyhedron *B) { return A->contains(*B); };
     void Minus(C_Polyhedron *result, C_Polyhedron *P, C_Polyhedron *S);
     void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M);
     void Size(C_Polyhedron *P, double *inequalities, double *equalities, double *dimension, double *vertices, double *rays);
     void ConvexHull(C_Polyhedron *R, C_Polyhedron *P, C_Polyhedron *S);
+    inline bool Empty(C_Polyhedron *P) { return P->is_empty(); };
     void A(C_Polyhedron *P, double *dest);
     void b(C_Polyhedron *P, double *dest);
     void V(C_Polyhedron *P, double *dest, size_t vertices);
