@@ -137,6 +137,19 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             coder.cinclude("ppl_matlab.hpp");
             inside = P.contains(x);
         end
+        function equal = eq(P, S)
+            coder.cinclude("ppl_matlab.hpp");
+            equal = 0;
+            equal = coder.ceval("ppl_matlab::Equal", ...
+                coder.ref(P.instance), coder.ref(S.instance));
+        end
+        function R = intersect(P, S)
+            coder.cinclude("ppl_matlab.hpp");
+            R = ppl_Polyhedron();
+            coder.ceval("ppl_matlab::Intersect", ...
+                coder.wref(R.instance), coder.ref(P.instance), coder.ref(S.instance));
+            R.update_representation();
+        end
     end
     methods (Access = private)
         % update polyhedron properties after a change

@@ -126,16 +126,25 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             empty = 0;
             empty = coder.ceval("ppl_matlab::Empty", coder.ref(P.instance));
         end
+        % Check if point x0 is inside polyhedron P
         function inside = isInside(P, x0)
             assert(isvector(x0));
-            if (size(x0,1)>1)   % if it is column vector
-                x0 = x0';       % convert to row vector
-            else 
-                
+            if (size(x0,1)==1)   % if it is row vector
+                x = ppl_Polyhedron.from_VRep(x0, []);
+            else                 % column vector gets transposed to row vector
+                x = ppl_Polyhedron.from_VRep(x0', []);
             end
             coder.cinclude("ppl_matlab.hpp");
-            x = ppl_Polyhedron.from_VRep(x0, []);
             inside = P.contains(x);
+        end
+        function equal = eq(P, S)
+            coder.cinclude("ppl_matlab.hpp");
+            equal = 0;
+            equal = coder.ceval("ppl_matlab::Equal", ...
+                coder.ref(P.instance), coder.ref(S.instance));
+        end
+        function R = intersect(P, S)
+            coder.cinclude("ppl_matlab.hpp");
         end
     end
     methods (Access = private)

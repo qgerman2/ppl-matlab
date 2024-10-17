@@ -81,6 +81,8 @@ namespace ppl_matlab {
     void Size(C_Polyhedron *P, double *inequalities, double *equalities, double *dimension, double *vertices, double *rays);
     void ConvexHull(C_Polyhedron *R, C_Polyhedron *P, C_Polyhedron *S);
     inline bool Empty(C_Polyhedron *P) { return P->is_empty(); };
+    inline bool Equal(C_Polyhedron *P, C_Polyhedron *S) { return *P == *S; };
+    void Intersect(C_Polyhedron *R, C_Polyhedron *P, C_Polyhedron *S);
     void A(C_Polyhedron *P, double *dest);
     void b(C_Polyhedron *P, double *dest);
     void V(C_Polyhedron *P, double *dest, size_t vertices);
