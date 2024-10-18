@@ -175,6 +175,9 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
             end
             res = P.distance(S);
         end
+        function R = projection(P, dims)
+            R = ppl_Polyhedron.from_VRep(P.V(:, dims), P.R(:, dims));
+        end
     end
     methods (Access = private)
         % update polyhedron properties after a change
