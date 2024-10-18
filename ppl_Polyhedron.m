@@ -150,6 +150,31 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
                 coder.wref(R.instance), coder.ref(P.instance), coder.ref(S.instance));
             R.update_representation();
         end
+        function res = distance(P, S)
+            assert(P.Dim == S.Dim);
+            opt_A = blkdiag(P.A, S.A);
+            opt_b = [P.b; S.b];
+            opt_Ae = blkdiag(P.Ae, S.Ae);
+            opt_be = [P.be; S.be];
+            fun = @(x) norm(x(1:P.Dim) - x(P.Dim+1:end));
+            options = optimoptions('fmincon','Algorithm','sqp');
+            [opt, fval] = fmincon(fun, ...
+                zeros(2, P.Dim), ...
+                opt_A, opt_b, opt_Ae, opt_be, ...
+                [], [], [], options);
+            res.x = opt(P.Dim+1:end);
+            res.y = opt(1:P.Dim);
+            res.dist = fval;
+        end
+        function res = project(P, x0)
+            assert(isvector(x0));
+            if (size(x0,1)==1)   % if it is row vector
+                S = ppl_Polyhedron.from_VRep(x0, []);
+            else                 % column vector gets transposed to row vector
+                S = ppl_Polyhedron.from_VRep(x0', []);
+            end
+            res = P.distance(S);
+        end
     end
     methods (Access = private)
         % update polyhedron properties after a change

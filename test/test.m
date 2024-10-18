@@ -1,15 +1,20 @@
 clearvars;
-clf;
 
-x = sdpvar(2, 1);
-A = [-0.46 -0.03; 0.08 -1.23; -0.92 -1.9; -1.92  2.37];
-b = [1.72; 3.84; 3.05; 0.03];
-constraints = [ 0.2*x'*x-[2.1 0.8]*x<=2; A*x<=b ];
-S = YSet(x, constraints);
+P = Polyhedron([eye(2); -eye(2)], [5;4;3;2]);
+S = Polyhedron("V", [10,10]);
 
-S.plot
+A = blkdiag(P.A, S.A);
+b = [P.b; S.b];
 
-x2 = [15; 0];
+Ae = blkdiag(P.Ae, S.Ae);
+be = [P.be; S.be];
 
-res = S.project(x2)
-res2 = S.distance(x2)
+
+fun = @(x) norm(x(1:P.Dim) - x(P.Dim+1:P.Dim*2));
+
+[res, fval] = fmincon(fun, [0, 0, 0, 0], A, b, Ae, be);
+
+plot(P)
+hold on
+plot(10,10,'Marker', 'o')
+plot(res(1), res(2), 'Marker', 'x');
