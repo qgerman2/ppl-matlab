@@ -1,4 +1,4 @@
-#include "lib/ppl.hh"
+#include "ppl.hh"
 
 namespace ppl_matlab {
     using namespace Parma_Polyhedra_Library;
@@ -70,8 +70,8 @@ namespace ppl_matlab {
     }
 
     void Polyhedron_HRep(C_Polyhedron *result,
-        double *A, size_t inequalities, size_t dimension,
-        double *b);
+        double *A, double *b, double *Ae, double *be,
+        size_t inequalities, size_t equalities, size_t dimension);
     void Polyhedron_VRep(C_Polyhedron *result,
         double *V, double *R, size_t dimension, size_t vertices, size_t rays
     );

@@ -4,12 +4,12 @@ using namespace Parma_Polyhedra_Library;
 
 namespace ppl_matlab {
     void Polyhedron_HRep(C_Polyhedron *result,
-        double *A, size_t inequalities, size_t dimension,
-        double *b) {
+        double *A, double *b, double *Ae, double *be,
+        size_t inequalities, size_t equalities, size_t dimension) {
 
         C_Polyhedron new_poly(dimension);
 
-        // set constraints
+        // set inequality constraints
         for (size_t row = 0; row < inequalities; row++) {
             FP_Linear_Form left;
             for (size_t col = 0; col < dimension; col++) {
@@ -17,6 +17,16 @@ namespace ppl_matlab {
             }
             FP_Linear_Form right(FP_Interval(b[row]));
             new_poly.refine_with_linear_form_inequality(left, right);
+        }
+
+        // set equality constraints
+        for (size_t row = 0; row < equalities; row++) {
+            FP_Linear_Form left;
+            for (size_t col = 0; col < dimension; col++) {
+                left += FP_Linear_Form(Variable(col)) * FP_Interval(Ae[equalities * col + row]);
+            }
+            FP_Linear_Form right(FP_Interval(be[row]));
+            new_poly.generalized_refine_with_linear_form_inequality(left, right, Relation_Symbol::EQUAL);
         }
 
         result->m_swap(new_poly);
