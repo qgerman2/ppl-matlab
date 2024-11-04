@@ -77,7 +77,7 @@ namespace ppl_matlab {
     );
     inline bool Contains(C_Polyhedron *A, C_Polyhedron *B) { return A->contains(*B); };
     void Minus(C_Polyhedron *result, C_Polyhedron *P, C_Polyhedron *S);
-    void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M);
+    void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M, double new_dim);
     void Size(C_Polyhedron *P, double *inequalities, double *equalities, double *dimension, double *vertices, double *rays);
     void ConvexHull(C_Polyhedron *R, C_Polyhedron *P, C_Polyhedron *S);
     inline bool Empty(C_Polyhedron *P) { return P->is_empty(); };

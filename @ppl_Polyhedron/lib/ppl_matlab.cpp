@@ -96,10 +96,10 @@ namespace ppl_matlab {
         result->m_swap(new_poly);
     }
 
-    void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M) {
+    void AffineMap(C_Polyhedron *result, C_Polyhedron *P, double *M, double new_dim) {
         C_Polyhedron new_poly(*P);
         size_t dim = P->space_dimension();
-        for (size_t row = 0; row < dim; row++) {
+        for (size_t row = 0; row < new_dim; row++) {
             FP_Linear_Form eq;
             for (size_t col = 0; col < dim; col++) {
                 eq += FP_Linear_Form(Variable(col)) * FP_Interval(M[dim * col + row]);

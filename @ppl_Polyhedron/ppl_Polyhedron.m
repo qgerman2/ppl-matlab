@@ -49,6 +49,13 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
                 P.instance = coder.opaque("Parma_Polyhedra_Library::C_Polyhedron");
             end
         end
+        % stubs
+        function minHRep(P)
+
+        end
+        function minVRep(P)
+
+        end
     end
     methods (Access = private)
         % update polyhedron properties after a change
