@@ -12,28 +12,17 @@ int main() {
       0, 1, 0, -1
     };
     double P_b[] = {
-        4.5, 5, 5, 5
+        1, 1, 1, 1
     };
-    ppl_matlab::Polyhedron_HRep(&P, P_A, 4, 2, P_b);
+    ppl_matlab::Polyhedron_HRep(&P, P_A, P_b, NULL, NULL, 4, 0, 2);
 
-
-    const Generator_System &gs = P.minimized_generators();
-    for (Generator_System::const_iterator i = gs.begin(); i != gs.end(); i++) {
-        const Generator &g = *i;
-        if (g.is_point()) {
-            //std::cout << std::format("x: {} y: {} e:{}\n", g.coefficient(Variable(0)).get_d(), g.coefficient(Variable(1)).get_d(), g.divisor().get_d());
-        }
-    }
-
-    double P_V[] = {
-        0, 0, 1.5, 2.5,
-        0, 1, 4, 3
-    };
-    double P_R[] = {
-        1, 1.5
+    double M[] = {
+        1, 1
     };
 
-    C_Polyhedron HH;
-    Polyhedron_VRep(&HH, P_V, P_R, 2, 4, 1);
-    HH.minimized_generators().print();
+    C_Polyhedron R;
+    ppl_matlab::AffineMap(&R, &P, M, 1);
+
+    std::cout << "\n";
+    R.constraints().print();
 }
