@@ -112,6 +112,8 @@ namespace ppl_matlab {
         }
         if (new_dim < dim) {
             new_poly.remove_higher_space_dimensions(new_dim);
+        } else if (new_dim > dim) {
+            new_poly.add_space_dimensions_and_embed(new_dim - dim);
         }
         result->m_swap(new_poly);
     }

@@ -17,11 +17,11 @@ int main() {
     ppl_matlab::Polyhedron_HRep(&P, P_A, P_b, NULL, NULL, 4, 0, 2);
 
     double M[] = {
-        1, 1
+        1, 0, 0, 0, 1, 0, 0, 0, 0
     };
 
     C_Polyhedron R;
-    ppl_matlab::AffineMap(&R, &P, M, 1);
+    ppl_matlab::AffineMap(&R, &P, M, 3);
 
     std::cout << "\n";
     R.constraints().print();
