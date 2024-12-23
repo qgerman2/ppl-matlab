@@ -1,6 +1,12 @@
 function contained = contains(P, B)
-    coder.cinclude("ppl_matlab.hpp");
     contained = 0;
-    contained = coder.ceval("ppl_matlab::Contains", ...
-        coder.ref(P.instance), coder.ref(B.instance));
+    coder.cinclude("ppl_matlab.hpp");
+    if isa(B, "ppl_Polyhedron")
+        contained = coder.ceval("ppl_matlab::Contains", ...
+            coder.ref(P.instance), coder.ref(B.instance));
+    elseif iscolumn(B)
+        poly = ppl_Polyhedron.from_VRep(B', []);
+        coder.ceval("ppl_matlab::Contains", ...
+            coder.ref(P.instance), coder.ref(poly.instance));
+    end
 end

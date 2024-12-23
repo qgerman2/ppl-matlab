@@ -2,7 +2,7 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
     %#codegen
      properties (SetAccess = private)
         instance
-        Dim  = 0;
+        Dim =  0;
         inequalities = 0;
         equalities = 0;
         vertices = 0;
@@ -38,11 +38,15 @@ classdef ppl_Polyhedron < coder.ExternalDependency & handle
         P = from_HRep(A, b, Ae, be)
         P = from_VRep(V, R)
         P = convexHull(S)
+        P = copy(S)
     end
     methods (Access = public)
         function P = ppl_Polyhedron(varargin)
             coder.cinclude("ppl_matlab.hpp");
-            if (nargin == 2)
+            if (nargin == 1)
+                % copy constructor
+                P = ppl_Polyhedron.copy(varargin{1});
+            elseif (nargin == 2)
                 % call H rep constructor
                 P = ppl_Polyhedron.from_HRep(varargin{1}, varargin{2}, [], []);
             else 
